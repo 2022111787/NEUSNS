@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CommentMapper">
+    
+    <resultMap type="Comment" id="CommentResult">
+        <result property="commentID"    column="commentID"    />
+        <result property="postID"    column="postID"    />
+        <result property="commentAuthor"    column="comment_author"    />
+        <result property="commentDate"    column="comment_date"    />
+        <result property="commentContent" column="comment_content"/>
+    </resultMap>
+
+    <sql id="selectCommentVo">
+        select commentID, postID, comment_author, comment_date,comment_content from comment
+    </sql>
+
+    <select id="selectCommentList" parameterType="Comment" resultMap="CommentResult">
+        <include refid="selectCommentVo"/>
+        <where>  
+            <if test="postID != null "> and postID = #{postID}</if>
+            <if test="commentAuthor != null  and commentAuthor != ''"> and comment_author = #{commentAuthor}</if>
+            <if test="commentDate != null "> and comment_date = #{commentDate}</if>
+        </where>
+    </select>
+    
+    <select id="selectCommentByCommentID" parameterType="Long" resultMap="CommentResult">
+        <include refid="selectCommentVo"/>
+        where commentID = #{commentID}
+    </select>
+
+    <insert id="insertComment" parameterType="Comment" useGeneratedKeys="true" keyProperty="commentID">
+        insert into comment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="postID != null">postID,</if>
+            <if test="commentAuthor != null and commentAuthor != ''">comment_author,</if>
+            <if test="commentDate != null">comment_date,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="postID != null">#{postID},</if>
+            <if test="commentAuthor != null and commentAuthor != ''">#{commentAuthor},</if>
+            <if test="commentDate != null">#{commentDate},</if>
+         </trim>
+    </insert>
+
+    <update id="updateComment" parameterType="Comment">
+        update comment
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="postID != null">postID = #{postID},</if>
+            <if test="commentAuthor != null and commentAuthor != ''">comment_author = #{commentAuthor},</if>
+            <if test="commentDate != null">comment_date = #{commentDate},</if>
+        </trim>
+        where commentID = #{commentID}
+    </update>
+
+    <delete id="deleteCommentByCommentID" parameterType="Long">
+        delete from comment where commentID = #{commentID}
+    </delete>
+
+    <delete id="deleteCommentByCommentIDs" parameterType="String">
+        delete from comment where commentID in 
+        <foreach item="commentID" collection="array" open="(" separator="," close=")">
+            #{commentID}
+        </foreach>
+    </delete>
+</mapper>

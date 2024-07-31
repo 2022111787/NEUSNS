@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.FriendMapper">
+    
+    <resultMap type="Friend" id="FriendResult">
+        <result property="friendID"    column="friendID"    />
+        <result property="friendName"    column="friend_name"    />
+        <result property="avatar"    column="avatar"    />
+        <result property="userID"    column="userID"    />
+    </resultMap>
+
+    <sql id="selectFriendVo">
+        select friendID, friend_name, avatar, userID from friend
+    </sql>
+
+    <select id="selectFriendList" parameterType="Friend" resultMap="FriendResult">
+        <include refid="selectFriendVo"/>
+        <where>  
+            <if test="friendName != null  and friendName != ''"> and friend_name like concat('%', #{friendName}, '%')</if>
+            <if test="avatar != null  and avatar != ''"> and avatar = #{avatar}</if>
+            <if test="userID != null "> and userID = #{userID}</if>
+        </where>
+    </select>
+    
+    <select id="selectFriendByFriendID" parameterType="Long" resultMap="FriendResult">
+        <include refid="selectFriendVo"/>
+        where friendID = #{friendID}
+    </select>
+
+    <insert id="insertFriend" parameterType="Friend" useGeneratedKeys="true" keyProperty="friendID">
+        insert into friend
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="friendName != null and friendName != ''">friend_name,</if>
+            <if test="avatar != null">avatar,</if>
+            <if test="userID != null">userID,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="friendName != null and friendName != ''">#{friendName},</if>
+            <if test="avatar != null">#{avatar},</if>
+            <if test="userID != null">#{userID},</if>
+         </trim>
+    </insert>
+
+    <update id="updateFriend" parameterType="Friend">
+        update friend
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="friendName != null and friendName != ''">friend_name = #{friendName},</if>
+            <if test="avatar != null">avatar = #{avatar},</if>
+            <if test="userID != null">userID = #{userID},</if>
+        </trim>
+        where friendID = #{friendID}
+    </update>
+
+    <delete id="deleteFriendByFriendID" parameterType="Long">
+        delete from friend where friendID = #{friendID}
+    </delete>
+
+    <delete id="deleteFriendByFriendIDs" parameterType="String">
+        delete from friend where friendID in 
+        <foreach item="friendID" collection="array" open="(" separator="," close=")">
+            #{friendID}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.BlogMapper">
+    
+    <resultMap type="Blog" id="BlogResult">
+        <result property="postID"    column="postID"    />
+        <result property="postTitle"    column="post_title"    />
+        <result property="postAuthor"    column="post_author"    />
+        <result property="postDate"    column="post_date"    />
+        <result property="postStatus"    column="post_status"    />
+        <result property="userID"    column="userID"    />
+        <result property="postContent"    column="post_content"    />
+    </resultMap>
+
+    <sql id="selectBlogVo">
+        select postID, post_title, post_author, post_date, post_status, userID, post_content from blog
+    </sql>
+
+    <select id="selectBlogList" parameterType="Blog" resultMap="BlogResult">
+        <include refid="selectBlogVo"/>
+        <where>  
+            <if test="postTitle != null  and postTitle != ''"> and post_title = #{postTitle}</if>
+            <if test="postAuthor != null  and postAuthor != ''"> and post_author = #{postAuthor}</if>
+            <if test="postDate != null "> and post_date = #{postDate}</if>
+            <if test="postStatus != null "> and post_status = #{postStatus}</if>
+            <if test="userID != null "> and userID = #{userID}</if>
+            <if test="postContent != null  and postContent != ''"> and post_content = #{postContent}</if>
+        </where>
+    </select>
+
+<!--    where  userID = #{userID}-->
+
+    <select id="selectmyBlogList" parameterType="Blog" resultMap="BlogResult">
+        <include refid="selectBlogVo"/>
+        <where>
+            <if test="postTitle != null  and postTitle != ''"> and post_title = #{postTitle}</if>
+            <if test="postAuthor != null  and postAuthor != ''"> and post_author = #{postAuthor}</if>
+            <if test="postDate != null "> and post_date = #{postDate}</if>
+            <if test="postStatus != null "> and post_status = #{postStatus}</if>
+            <if test="userID != null "> and userID = #{userID}</if>
+            <if test="postContent != null  and postContent != ''"> and post_content = #{postContent}</if>
+        </where>
+    </select>
+
+
+
+    <select id="selectBlogByPostID" parameterType="Long" resultMap="BlogResult">
+        <include refid="selectBlogVo"/>
+        where postID = #{postID}
+    </select>
+
+    <insert id="insertBlog" parameterType="Blog" useGeneratedKeys="true" keyProperty="postID">
+        insert into blog
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="postTitle != null and postTitle != ''">post_title,</if>
+            <if test="postAuthor != null and postAuthor != ''">post_author,</if>
+            <if test="postDate != null">post_date,</if>
+            <if test="postStatus != null">post_status,</if>
+            <if test="userID != null">userID,</if>
+            <if test="postContent != null and postContent != ''">post_content,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="postTitle != null and postTitle != ''">#{postTitle},</if>
+            <if test="postAuthor != null and postAuthor != ''">#{postAuthor},</if>
+            <if test="postDate != null">#{postDate},</if>
+            <if test="postStatus != null">#{postStatus},</if>
+            <if test="userID != null">#{userID},</if>
+            <if test="postContent != null and postContent != ''">#{postContent},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBlog" parameterType="Blog">
+        update blog
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="postTitle != null and postTitle != ''">post_title = #{postTitle},</if>
+            <if test="postAuthor != null and postAuthor != ''">post_author = #{postAuthor},</if>
+            <if test="postDate != null">post_date = #{postDate},</if>
+            <if test="postStatus != null">post_status = #{postStatus},</if>
+            <if test="userID != null">userID = #{userID},</if>
+            <if test="postContent != null and postContent != ''">post_content = #{postContent},</if>
+        </trim>
+        where postID = #{postID}
+    </update>
+
+    <delete id="deleteBlogByPostID" parameterType="Long">
+        delete from blog where postID = #{postID}
+    </delete>
+
+    <delete id="deleteBlogByPostIDs" parameterType="String">
+        delete from blog where postID in 
+        <foreach item="postID" collection="array" open="(" separator="," close=")">
+            #{postID}
+        </foreach>
+    </delete>
+</mapper>
